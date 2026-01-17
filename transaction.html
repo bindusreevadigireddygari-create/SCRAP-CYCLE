@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scrap Cycle - Transaction</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+      :root {
+        --dark-primary: #1a1a1a;
+        --dark-secondary: #2d2d2d;
+        --dark-accent: #03396c;
+        --text-primary: #ffffff;
+        --text-secondary: #cccccc;
+        --accent-yellow: #ffd700;
+        --link-color: #00a8ff;
+        --success-green: #28a745;
+        --error-red: #dc3545;
+      }
+
+      body {
+        background-color: var(--dark-primary);
+        color: var(--text-primary);
+        font-family: "Arial", sans-serif;
+      }
+
+      .navbar {
+        background-color: var(--dark-accent) !important;
+      }
+
+      .navbar-brand {
+        color: var(--accent-yellow) !important;
+        font-weight: bold;
+      }
+
+      h1,
+      h2 {
+        color: var(--accent-yellow);
+      }
+
+      p,
+      label {
+        color: var(--text-secondary);
+      }
+
+      .form-control {
+        background-color: var(--dark-secondary);
+        border-color: var(--dark-accent);
+        color: var(--text-primary);
+      }
+
+      .form-control:focus {
+        background-color: var(--dark-secondary);
+        border-color: var(--accent-yellow);
+        color: var(--text-primary);
+        box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+      }
+
+      .btn-primary,
+      .btn-success,
+      .btn-danger {
+        margin: 10px;
+      }
+
+      #rate-card,
+      #billing-details,
+      #owner-details,
+      #transaction-history {
+        background-color: var(--dark-secondary);
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+
+      .material-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-bottom: 1px solid var(--dark-accent);
+      }
+
+      .material-row:last-child {
+        border-bottom: none;
+      }
+
+      .total-amount {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: var(--accent-yellow);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      .modal-content {
+        background-color: var(--dark-secondary);
+        color: var(--text-primary);
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid var(--dark-accent);
+        width: 80%;
+        max-width: 500px;
+        border-radius: 10px;
+      }
+
+      .history-table {
+        width: 100%;
+        color: var(--text-primary);
+      }
+
+      .history-table th {
+        color: var(--accent-yellow);
+        border-bottom: 2px solid var(--dark-accent);
+        padding: 10px;
+      }
+
+      .history-table td {
+        padding: 10px;
+        border-bottom: 1px solid var(--dark-accent);
+      }
+
+      .history-table tr:hover {
+        background-color: var(--dark-accent);
+      }
+
+      #loading-spinner {
+        display: none;
+        color: var(--accent-yellow);
+      }
+
+      .payment-info {
+        background-color: var(--dark-primary);
+        padding: 15px;
+        border-radius: 8px;
+        margin: 10px 0;
+      }
+
+      .payment-method {
+        border-bottom: 1px solid var(--dark-accent);
+        padding: 10px 0;
+      }
+
+      .payment-method:last-child {
+        border-bottom: none;
+      }
+
+      .qr-code {
+        background-color: white;
+        padding: 15px;
+        border-radius: 8px;
+        max-width: 200px;
+        margin: 15px auto;
+      }
+
+      .copy-btn {
+        background-color: var(--dark-accent);
+        color: var(--text-primary);
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.8em;
+        transition: all 0.3s ease;
+      }
+
+      .copy-btn:hover {
+        background-color: var(--accent-yellow);
+        color: var(--dark-primary);
+      }
+
+      .error-message {
+        color: var(--error-red);
+        font-size: 0.9em;
+        margin-top: 5px;
+      }
+
+      .success-message {
+        color: var(--success-green);
+        font-size: 0.9em;
+        margin-top: 5px;
+      }
+
+      .quantity-input {
+        width: 80px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-dark mb-4">
+      <div class="container">
+        <span class="navbar-brand">Scrap Cycle</span>
+      </div>
+    </nav>
+
+    <div class="container my-5">
+      <h1>Scrap Material Transaction</h1>
+      <hr />
+
+      <!-- Billing Details Section -->
+      <div id="billing-details">
+        <h2>Payment Details</h2>
+        <div class="payment-info">
+          <h4 class="text-warning">Account Holder Details</h4>
+          <div class="payment-method">
+            <p><strong>Name:</strong> Kedareswar</p>
+            <p><strong>Mobile:</strong> 9849920032</p>
+          </div>
+
+          <h4 class="text-warning mt-4">Bank Transfer</h4>
+          <div class="payment-method">
+            <p><strong>Bank:</strong> State Bank of India</p>
+            <p>
+              <strong>Account Number:</strong>
+              <span id="account-number">20321654987</span>
+              <button
+                class="copy-btn ml-2"
+                onclick="copyToClipboard('account-number')"
+              >
+                Copy
+              </button>
+            </p>
+            <p>
+              <strong>IFSC Code:</strong>
+              <span id="ifsc-code">SBIN0123456</span>
+              <button
+                class="copy-btn ml-2"
+                onclick="copyToClipboard('ifsc-code')"
+              >
+                Copy
+              </button>
+            </p>
+          </div>
+
+          <h4 class="text-warning mt-4">UPI Payment</h4>
+          <div class="payment-method">
+            <p>
+              <strong>UPI ID:</strong>
+              <span id="upi-id">kedareswar@ybl</span>
+              <button class="copy-btn ml-2" onclick="copyToClipboard('upi-id')">
+                Copy
+              </button>
+            </p>
+            <div class="qr-code text-center">
+              <img src="/api/placeholder/200/200" alt="Payment QR Code" />
+              <p class="text-dark mt-2 mb-0"><small>Scan to pay</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rate Card Section -->
+      <div id="rate-card">
+        <h2>Material Rates</h2>
+        <div id="materials-list"></div>
+        <div class="total-section mt-3">
+          <h3>Total Amount: ₹<span id="total-amount">0</span></h3>
+          <button class="btn btn-success" id="proceed-btn">
+            Proceed to Payment
+          </button>
+        </div>
+      </div>
+
+      <!-- Owner Details Modal -->
+      <div id="payment-modal" class="modal">
+        <div class="modal-content">
+          <h2>Enter Your Details</h2>
+          <form id="owner-form">
+            <div class="form-group">
+              <label for="name">Full Name</label>
+              <input type="text" class="form-control" id="name" required />
+              <div class="error-message" id="name-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="address">Address</label>
+              <textarea class="form-control" id="address" required></textarea>
+              <div class="error-message" id="address-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" required />
+              <div class="error-message" id="email-error"></div>
+            </div>
+            <div class="form-group">
+              <label for="phone">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" required />
+              <div class="error-message" id="phone-error"></div>
+            </div>
+            <button type="button" class="btn btn-danger" id="cancel-btn">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-success"
+              id="payment-completed-btn"
+            >
+              Complete Payment
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Transaction History Section -->
+      <div id="transaction-history" class="mt-5">
+        <h2>Transaction History</h2>
+        <div class="table-responsive">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Materials</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Loading Spinner -->
+      <div id="loading-spinner" class="text-center">
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Email configuration and validation
+      const EMAIL_CONFIG = {
+        PUBLIC_KEY: "3Wc9xrW2ED8rysLQ-",
+        SERVICE_ID: "service_hgkqx7q",
+        TEMPLATE_ID: "template_yj5ja7p",
+        ADMIN_EMAIL: "kedareswartiruveedhi@gmail.com",
+      };
+
+      // Initialize EmailJS
+      (function initializeEmail() {
+        try {
+          emailjs.init(EMAIL_CONFIG.PUBLIC_KEY);
+        } catch (error) {
+          console.error("EmailJS initialization failed:", error);
+        }
+      })();
+
+      // Material rates data
+      const scrapRates = [
+        { material: "Newspaper", rate: 15, quantity: 0 },
+        { material: "Cardboard", rate: 10, quantity: 0 },
+        { material: "Iron", rate: 25, quantity: 0 },
+        { material: "Copper", rate: 400, quantity: 0 },
+        { material: "Aluminum", rate: 100, quantity: 0 },
+        { material: "Plastic", rate: 20, quantity: 0 },
+        { material: "Glass", rate: 5, quantity: 0 },
+      ];
+
+      // Form validation utilities
+      const validators = {
+        email: (email) => {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email) ? null : "Invalid email format";
+        },
+        phone: (phone) => {
+          const phoneRegex = /^[6-9]\d{9}$/;
+          return phoneRegex.test(phone) ? null : "Invalid phone number format";
+        },
+        required: (value, fieldName) =>
+          value?.trim() ? null : `${fieldName} is required`,
+        amount: (value) =>
+          parseFloat(value) > 0 ? null : "Total amount must be greater than 0",
+        materials: (materials) =>
+          materials.some((m) => m.quantity > 0)
+            ? null
+            : "At least one material must be selected",
+      };
+
+      // Transaction data handler
+      class TransactionHandler {
+        static async sendEmailNotification(transactionData) {
+          try {
+            const emailTemplateParams = {
+              to_email: EMAIL_CONFIG.ADMIN_EMAIL,
+              customer_name: transactionData.name,
+              customer_email: transactionData.email,
+              customer_phone: transactionData.phone,
+              customer_address: transactionData.address,
+              total_amount: transactionData.totalAmount,
+              materials: transactionData.materials
+                .filter((m) => m.quantity > 0)
+                .map(
+                  (m) =>
+                    `${m.material}: ${m.quantity}kg (₹${(
+                      m.rate * m.quantity
+                    ).toFixed(2)})`
+                )
+                .join("\n"),
+            };
+
+            const response = await emailjs.send(
+              EMAIL_CONFIG.SERVICE_ID,
+              EMAIL_CONFIG.TEMPLATE_ID,
+              emailTemplateParams
+            );
+
+            if (response.status !== 200) {
+              throw new Error(
+                `Email sending failed with status: ${response.status}`
+              );
+            }
+
+            return response;
+          } catch (error) {
+            console.error("Email notification failed:", error);
+            throw error;
+          }
+        }
+
+        static validateTransaction(transactionData) {
+          const errors = [];
+
+          const validations = [
+            validators.required(transactionData.name, "Name"),
+            validators.required(transactionData.email, "Email"),
+            validators.required(transactionData.phone, "Phone"),
+            validators.required(transactionData.address, "Address"),
+            validators.email(transactionData.email),
+            validators.phone(transactionData.phone),
+            validators.amount(transactionData.totalAmount),
+            validators.materials(transactionData.materials),
+          ];
+
+          return validations.filter(Boolean);
+        }
+
+        static async processTransaction(formData, materials, callbacks = {}) {
+          const { onStart, onSuccess, onError, onComplete } = callbacks;
+
+          try {
+            onStart?.();
+
+            const transactionData = {
+              name: formData.name,
+              address: formData.address,
+              email: formData.email,
+              phone: formData.phone,
+              totalAmount: parseFloat(formData.totalAmount),
+              materials: materials.filter((m) => m.quantity > 0),
+              date: new Date().toLocaleDateString(),
+              status: "Completed",
+            };
+
+            // Validate transaction data
+            const validationErrors = this.validateTransaction(transactionData);
+            if (validationErrors.length > 0) {
+              throw new Error(
+                "Validation failed:\n" + validationErrors.join("\n")
+              );
+            }
+
+            // Send email notification
+            await this.sendEmailNotification(transactionData);
+
+            // Store transaction in local history
+            const history = JSON.parse(
+              localStorage.getItem("transactionHistory") || "[]"
+            );
+            history.push(transactionData);
+            localStorage.setItem("transactionHistory", JSON.stringify(history));
+
+            onSuccess?.(transactionData);
+            return transactionData;
+          } catch (error) {
+            console.error("Transaction processing failed:", error);
+            onError?.(error);
+            throw error;
+          } finally {
+            onComplete?.();
+          }
+        }
+      }
+
+      // UI Handler
+      class UIHandler {
+        static showError(elementId, message) {
+          const errorElement = document.getElementById(`${elementId}-error`);
+          if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = "block";
+          }
+        }
+
+        static clearError(elementId) {
+          const errorElement = document.getElementById(`${elementId}-error`);
+          if (errorElement) {
+            errorElement.textContent = "";
+            errorElement.style.display = "none";
+          }
+        }
+
+        static clearAllErrors() {
+          ["name", "email", "phone", "address"].forEach(this.clearError);
+        }
+
+        static showLoadingSpinner() {
+          document.getElementById("loading-spinner").style.display = "block";
+        }
+
+        static hideLoadingSpinner() {
+          document.getElementById("loading-spinner").style.display = "none";
+        }
+
+        static updateTotalAmount() {
+          const total = scrapRates.reduce((sum, material) => {
+            return sum + material.quantity * material.rate;
+          }, 0);
+          document.getElementById("total-amount").textContent =
+            total.toFixed(2);
+          return total;
+        }
+
+        static renderMaterialsList() {
+          const materialsContainer = document.getElementById("materials-list");
+          materialsContainer.innerHTML = scrapRates
+            .map(
+              (material) => `
+            <div class="material-row">
+              <span>${material.material} (₹${material.rate}/kg)</span>
+              <input 
+                type="number" 
+                class="form-control quantity-input" 
+                value="${material.quantity}"
+                min="0"
+                data-material="${material.material}"
+                onchange="UIHandler.handleQuantityChange(event)"
+              />
+            </div>
+          `
+            )
+            .join("");
+        }
+
+        static handleQuantityChange(event) {
+          const { material } = event.target.dataset;
+          const quantity = parseFloat(event.target.value) || 0;
+
+          const materialIndex = scrapRates.findIndex(
+            (m) => m.material === material
+          );
+          if (materialIndex !== -1) {
+            scrapRates[materialIndex].quantity = quantity;
+            this.updateTotalAmount();
+          }
+        }
+
+        static showPaymentModal() {
+          document.getElementById("payment-modal").style.display = "block";
+        }
+
+        static hidePaymentModal() {
+          document.getElementById("payment-modal").style.display = "none";
+          document.getElementById("owner-form").reset();
+          this.clearAllErrors();
+        }
+
+        static updateTransactionHistory() {
+          const history = JSON.parse(
+            localStorage.getItem("transactionHistory") || "[]"
+          );
+          const tbody = document.getElementById("history-tbody");
+
+          tbody.innerHTML = history
+            .map(
+              (transaction) => `
+            <tr>
+              <td>${transaction.date}</td>
+              <td>${transaction.name}</td>
+              <td>${transaction.materials
+                .map((m) => `${m.material}: ${m.quantity}kg`)
+                .join(", ")}</td>
+              <td>₹${transaction.totalAmount.toFixed(2)}</td>
+              <td>${transaction.status}</td>
+            </tr>
+          `
+            )
+            .join("");
+        }
+      }
+
+      // Clipboard functionality
+      function copyToClipboard(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.textContent;
+
+        navigator.clipboard
+          .writeText(text)
+          .then(() => {
+            const button = element.nextElementSibling;
+            const originalText = button.textContent;
+            button.textContent = "Copied!";
+            setTimeout(() => {
+              button.textContent = originalText;
+            }, 2000);
+          })
+          .catch((err) => {
+            console.error("Failed to copy text:", err);
+          });
+      }
+
+      // Event Listeners
+      document.addEventListener("DOMContentLoaded", () => {
+        UIHandler.renderMaterialsList();
+        UIHandler.updateTransactionHistory();
+
+        document.getElementById("proceed-btn").addEventListener("click", () => {
+          const total = UIHandler.updateTotalAmount();
+          if (total > 0) {
+            UIHandler.showPaymentModal();
+          } else {
+            alert("Please add at least one material to proceed.");
+          }
+        });
+
+        document.getElementById("cancel-btn").addEventListener("click", () => {
+          UIHandler.hidePaymentModal();
+        });
+
+        document
+          .getElementById("payment-completed-btn")
+          .addEventListener("click", async () => {
+            const form = document.getElementById("owner-form");
+            const formData = {
+              name: form.querySelector("#name").value,
+              address: form.querySelector("#address").value,
+              email: form.querySelector("#email").value,
+              phone: form.querySelector("#phone").value,
+              totalAmount: UIHandler.updateTotalAmount(),
+            };
+
+            try {
+              await TransactionHandler.processTransaction(
+                formData,
+                scrapRates,
+                {
+                  onStart: () => {
+                    UIHandler.showLoadingSpinner();
+                    UIHandler.clearAllErrors();
+                  },
+                  onSuccess: () => {
+                    UIHandler.hidePaymentModal();
+                    UIHandler.updateTransactionHistory();
+                    alert("Transaction completed successfully!");
+
+                    // Reset material quantities
+                    scrapRates.forEach((material) => (material.quantity = 0));
+                    UIHandler.renderMaterialsList();
+                    UIHandler.updateTotalAmount();
+                  },
+                  onError: (error) => {
+                    if (error.message.includes("Validation failed:")) {
+                      const errors = error.message.split("\n").slice(1);
+                      errors.forEach((err) => {
+                        const field = err.split(" is ")[0].toLowerCase();
+                        UIHandler.showError(field, err);
+                      });
+                    } else {
+                      alert("Transaction failed: " + error.message);
+                    }
+                  },
+                  onComplete: () => {
+                    UIHandler.hideLoadingSpinner();
+                  },
+                }
+              );
+            } catch (error) {
+              console.error("Transaction failed:", error);
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

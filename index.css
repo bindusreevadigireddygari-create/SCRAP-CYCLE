@@ -1,0 +1,371 @@
+/* Dark Mode CSS for Scrap Cycle */
+
+/* Dark Mode CSS for Scrap Cycle */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+  scroll-behavior: smooth;
+}
+
+/* Navbar with Enhanced Hover and Animation */
+.navbar {
+  padding: 1rem 2rem;
+  background-color: #1e1e1e !important;
+  border-bottom: 1px solid #333;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #4caf50 !important;
+  transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link {
+  color: #b0bec5 !important;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navbar-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -5px;
+  left: 0;
+  background-color: #4caf50;
+  transition: width 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover::after {
+  width: 100%;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #4caf50 !important;
+  transform: translateY(-3px);
+}
+
+/* Carousel with Enhanced Effects */
+.carousel-item {
+  overflow: hidden;
+}
+
+.carousel-item img {
+  max-height: 500px;
+  object-fit: cover;
+  filter: brightness(70%);
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+
+.carousel-item:hover img {
+  transform: scale(1.1);
+  filter: brightness(80%);
+}
+
+.carousel-caption {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.2);
+}
+
+/* Cards with Enhanced Hover and Animation */
+.card {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(76, 175, 80, 0.1),
+    transparent
+  );
+  transform: rotate(-45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.2);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.card-img-top {
+  filter: brightness(80%);
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.1);
+  filter: brightness(90%);
+}
+
+.card-title {
+  color: #4caf50;
+  transition: color 0.3s ease;
+}
+
+.card:hover .card-title {
+  color: #45a049;
+}
+
+/* Buttons with Pulse and Gradient Effects */
+.btn-primary {
+  background-color: #4caf50;
+  border-color: #4caf50;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn-primary::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    115deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: all 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  background-color: #45a049;
+  border-color: #3d8b40;
+  animation: pulse 0.5s ease-in-out;
+}
+
+/* Global Animations and Interactions */
+* {
+  box-sizing: border-box;
+}
+
+section {
+  animation: fadeIn 0.7s ease-out;
+}
+
+/* Rest of the previous CSS remains the same... */
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #121212;
+  color: #e0e0e0;
+}
+
+/* Navbar */
+.navbar {
+  padding: 1rem 2rem;
+  background-color: #1e1e1e !important;
+  border-bottom: 1px solid #333;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #4caf50 !important;
+}
+
+.navbar-nav .nav-link {
+  color: #b0bec5 !important;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #4caf50 !important;
+}
+
+/* Carousel */
+.carousel-item img {
+  max-height: 500px;
+  object-fit: cover;
+  filter: brightness(70%);
+}
+
+.carousel-caption {
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+/* Cards */
+.card {
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  color: #e0e0e0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+}
+
+.card-img-top {
+  filter: brightness(80%);
+}
+
+.card-title {
+  color: #4caf50;
+}
+
+/* Jumbotron */
+.jumbotron {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  padding: 2rem 1rem;
+}
+
+.jumbotron h1 {
+  color: #4caf50;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #4caf50;
+  border-color: #4caf50;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #45a049;
+  border-color: #3d8b40;
+}
+
+/* Sections */
+.bg-light {
+  background-color: #2a2a2a !important;
+  color: #e0e0e0;
+}
+
+/* Footer */
+footer {
+  background-color: #1e1e1e !important;
+  color: #b0bec5;
+}
+
+footer a {
+  color: #4caf50;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+footer a:hover {
+  color: #45a049;
+  text-decoration: none;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .carousel-item img {
+    max-height: 300px;
+  }
+}
+
+/* Additional Dark Mode Tweaks */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: #4caf50;
+}
+
+p {
+  color: #b0bec5;
+}
+
+/* Scrollbar (for WebKit browsers) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2a2a2a;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4caf50;
+  border-radius: 6px;
+}
